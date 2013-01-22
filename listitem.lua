@@ -15,7 +15,20 @@ local STATUS_COLORS = setmetatable({
 	DEP_MISSING = {1, 0.5, 0},
 }, {__index = function() return RED_TEXT end})
 
-local LoadButton = tdAddon:NewModule('LoadButton', GUI('Button'):New())
+local WHITE_LIST = {
+    tdAddon = true,
+    tdCore = true,
+}
+
+local LoadButton = tdAddon:NewModule('LoadButton', GUI('Button'):New(), 'Event')
+
+function LoadButton:OnInit()
+    self:RegisterEvent('ADDON_LOADED')
+end
+
+function LoadButton:ADDON_LOADED()
+    tdAddon:Refresh()
+end
 
 function LoadButton:New(parent)
     local obj = self:Bind(GUI('Button'):New(parent))
@@ -42,7 +55,6 @@ end
 
 function LoadButton:OnClick()
     self:GetParent():GetValue():Load()
-    self:GetParent():Refresh()
 end
 
 local CheckBox = tdAddon:NewModule('CheckBox', GUI('CheckBox'):New())
@@ -116,7 +128,7 @@ end
 function AddonItem:OnClick()
     local addon = self:GetAddon()
     
-    if addon:IsEnabled() then
+    if addon:IsEnabled() and not WHITE_LIST[addon:GetName()] then
         addon:Disable()
     else
         addon:Enable()
@@ -148,6 +160,13 @@ function AddonItem:SetValue(addon)
     else
         self.loadbutton:Hide()
         self:GetValueFontString():SetPoint('RIGHT', -5, 0)
+    end
+    if WHITE_LIST[addon:GetName()] then
+        self.checkbox:Disable()
+        self.checkbox:EnableMouse(false)
+    else
+        self.checkbox:Enable()
+        self.checkbox:EnableMouse(true)
     end
 end
 AddonItem.GetAddon = AddonItem.GetValue
