@@ -1,0 +1,8 @@
+﻿## Interface: 50100
+## Title: tdAddon
+## Note: Taiduo's addons manager
+## Author: ldz5
+## Version: 50100.01
+## Dependencies: tdCore
+
+load.xml
